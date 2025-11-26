@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <meta name="robots" content="noindex, nofollow">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard FRL Analysis</title>
@@ -208,6 +209,20 @@
     </style>
 </head>
 <body>
+
+    <!-- LOGIN OVERLAY -->
+<div id="login-overlay" style="position: fixed; top:0; left:0; width:100%; height:100%; background:#064e3b; z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column;">
+    <div style="background:white; padding:30px; border-radius:16px; text-align:center; width:300px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+        <h2 style="color:#064e3b; margin:0 0 20px 0;">🔒 Restricted Access</h2>
+        <input type="password" id="pass-input" placeholder="Enter Passcode" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; margin-bottom:15px; outline:none;">
+        <button onclick="checkPass()" style="width:100%; background:#10b981; color:white; border:none; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold;">Open Dashboard</button>
+        <p id="err-msg" style="color:red; font-size:12px; margin-top:10px; display:none;">Passcode Salah!</p>
+    </div>
+</div>
+
+<!-- WRAPPER UTAMA (Sembunyikan konten asli dulu) -->
+<div id="app-content" style="display:none; height: 100%; width: 100%;">
+    <!-- ... Disini mulai masuk kode Sidebar dan Main Content Anda yang asli ... -->
 
     <!-- ID Sidebar tetap sama -->
     <div class="sidebar" id="sidebar">
@@ -620,6 +635,39 @@
     function scrollToId(id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
     window.onload = () => { setLanguage(currentLang); setTheme(currentTheme); applyPreset(1); };
 
+</script>
+</div>
+    <script>
+    // Konfigurasi Password
+    const PASSCODE = "FRL2025"; // Ganti password sesuai keinginan Anda
+
+    function checkPass() {
+        const input = document.getElementById('pass-input').value;
+        if(input === PASSCODE) {
+            document.getElementById('login-overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('app-content').style.display = 'flex'; // Tampilkan konten
+                // Trigger resize biar grafik muncul sempurna
+                window.dispatchEvent(new Event('resize'));
+            }, 500);
+            // Simpan sesi agar tidak perlu login lagi saat refresh (Opsional)
+            sessionStorage.setItem('frl_auth', 'true');
+        } else {
+            document.getElementById('err-msg').style.display = 'block';
+        }
+    }
+
+    // Cek apakah user sudah login sebelumnya
+    if(sessionStorage.getItem('frl_auth') === 'true') {
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('app-content').style.display = 'flex';
+    }
+    
+    // Support Enter Key
+    document.getElementById("pass-input").addEventListener("keypress", function(event) {
+      if (event.key === "Enter") { checkPass(); }
+    });
 </script>
 </body>
 </html>
